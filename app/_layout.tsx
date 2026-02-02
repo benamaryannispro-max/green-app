@@ -11,13 +11,13 @@ import {
 import { useNetworkState } from "expo-network";
 import { useFonts } from "expo-font";
 import { useColorScheme, View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { SystemBars } from "react-native-edge-to-edge";
 import "react-native-reanimated";
 import { colors } from "@/styles/commonStyles";
-import { getSupabaseConfig, SupabaseConfigStatus } from "@/lib/supabase";
+import { loadSupabaseConfig, SupabaseConfigStatus } from "@/lib/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Prevent the splash screen from auto-hiding
@@ -51,9 +51,15 @@ const CustomDarkTheme: Theme = {
 function ConfigurationRequiredScreen({ config, onReload }: { config: SupabaseConfigStatus; onReload: () => void }) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const router = useRouter();
 
   const urlDisplay = config.supabaseUrl || '(vide)';
   const keyDisplay = config.supabaseAnonKey ? '********' : '(vide)';
+
+  const handleConfigureNow = () => {
+    console.log('User tapped Configure Now button');
+    router.push('/configure-supabase');
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? colors.dark.background : colors.light.background }]}>
@@ -64,21 +70,8 @@ function ConfigurationRequiredScreen({ config, onReload }: { config: SupabaseCon
           </Text>
           
           <Text style={[styles.message, { color: isDark ? colors.dark.text : colors.light.text }]}>
-            Veuillez renseigner les clés Supabase dans la section "extra" de votre fichier app.json :
+            Renseignez vos clés Supabase pour utiliser l'application.
           </Text>
-
-          <View style={[styles.codeBlock, { backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5' }]}>
-            <Text style={[styles.codeText, { color: isDark ? '#e0e0e0' : '#333' }]}>
-              {`{
-  "expo": {
-    "extra": {
-      "supabaseUrl": "YOUR_SUPABASE_URL",
-      "supabaseAnonKey": "YOUR_SUPABASE_ANON_KEY"
-    }
-  }
-}`}
-            </Text>
-          </View>
 
           <View style={styles.statusContainer}>
             <Text style={[styles.statusTitle, { color: isDark ? colors.dark.text : colors.light.text }]}>
@@ -105,15 +98,20 @@ function ConfigurationRequiredScreen({ config, onReload }: { config: SupabaseCon
           </View>
 
           <TouchableOpacity 
-            style={[styles.button, { backgroundColor: isDark ? colors.dark.primary : colors.light.primary }]}
-            onPress={onReload}
+            style={[styles.button, styles.primaryButton, { backgroundColor: isDark ? colors.dark.primary : colors.light.primary }]}
+            onPress={handleConfigureNow}
           >
-            <Text style={styles.buttonText}>Recharger la configuration</Text>
+            <Text style={styles.buttonText}>Configurer maintenant</Text>
           </TouchableOpacity>
 
-          <Text style={[styles.helpText, { color: isDark ? '#999' : '#666' }]}>
-            Après avoir modifié app.json, redémarrez l'application ou appuyez sur "Recharger".
-          </Text>
+          <TouchableOpacity 
+            style={[styles.button, styles.secondaryButton, { borderColor: isDark ? colors.dark.border : colors.light.border }]}
+            onPress={onReload}
+          >
+            <Text style={[styles.secondaryButtonText, { color: isDark ? colors.dark.text : colors.light.text }]}>
+              Recharger la configuration
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -124,6 +122,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { isConnected } = useNetworkState();
   const [supabaseConfigStatus, setSupabaseConfigStatus] = useState<SupabaseConfigStatus | null>(null);
+  const [configLoading, setConfigLoading] = useState(true);
 
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -135,9 +134,16 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  useEffect(() => {
+  const checkSupabaseConfig = async () => {
     console.log('RootLayout: Checking Supabase configuration');
-    setSupabaseConfigStatus(getSupabaseConfig());
+    setConfigLoading(true);
+    const config = await loadSupabaseConfig();
+    setSupabaseConfigStatus(config);
+    setConfigLoading(false);
+  };
+
+  useEffect(() => {
+    checkSupabaseConfig();
   }, []);
 
   useEffect(() => {
@@ -148,11 +154,7 @@ export default function RootLayout() {
 
   const handleReload = () => {
     console.log('RootLayout: Reloading Supabase configuration');
-    // Clear the cached config and re-evaluate
-    setSupabaseConfigStatus(null);
-    setTimeout(() => {
-      setSupabaseConfigStatus(getSupabaseConfig());
-    }, 100);
+    checkSupabaseConfig();
   };
 
   if (!loaded) {
@@ -160,7 +162,7 @@ export default function RootLayout() {
   }
 
   // Show loading while checking configuration
-  if (!supabaseConfigStatus) {
+  if (configLoading || !supabaseConfigStatus) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colorScheme === 'dark' ? colors.dark.background : colors.light.background }}>
         <Text style={{ color: colorScheme === 'dark' ? colors.dark.text : colors.light.text }}>
@@ -222,6 +224,15 @@ export default function RootLayout() {
                 headerBackTitle: "Retour"
               }} 
             />
+            <Stack.Screen 
+              name="configure-supabase" 
+              options={{ 
+                title: "Configuration Supabase",
+                headerShown: true,
+                headerBackTitle: "Retour",
+                presentation: "modal"
+              }} 
+            />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
@@ -258,18 +269,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  codeBlock: {
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 24,
-  },
-  codeText: {
-    fontFamily: 'monospace',
-    fontSize: 14,
-    lineHeight: 20,
-  },
   statusContainer: {
     marginBottom: 24,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.05)',
   },
   statusTitle: {
     fontSize: 18,
@@ -281,8 +285,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
   },
   statusLabel: {
     fontSize: 14,
@@ -297,17 +299,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  primaryButton: {
+    // backgroundColor set dynamically
+  },
+  secondaryButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
-  helpText: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-    fontStyle: 'italic',
+  secondaryButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
