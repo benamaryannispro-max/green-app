@@ -1,3 +1,4 @@
+
 {
   "expo": {
     "name": "Green Hands",
@@ -41,7 +42,9 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "supabaseUrl": "",
+      "supabaseAnonKey": ""
     }
   }
 }

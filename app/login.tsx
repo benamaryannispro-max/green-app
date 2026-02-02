@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import { IconSymbol } from '@/components/IconSymbol';
+import { Stack, useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -12,61 +13,64 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
-import { supabase } from '@/lib/supabase';
 import { useTheme } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { getSupabaseClient } from '@/lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { IconSymbol } from '@/components/IconSymbol';
 
 export default function LoginScreen() {
-  const router = useRouter();
   const { colors } = useTheme();
+  const router = useRouter();
 
   // Admin/Team Leader state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loadingAdmin, setLoadingAdmin] = useState(false);
-  const [adminError, setAdminError] = useState('');
+  const [adminLoading, setAdminLoading] = useState(false);
 
   // Driver state
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState('');
-  const [loadingDriver, setLoadingDriver] = useState(false);
+  const [driverLoading, setDriverLoading] = useState(false);
 
-  // Validation functions
-  const isValidEmail = (email: string): boolean => {
+  const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const isValidPhone = (phone: string): boolean => {
-    const phoneRegex = /^\+33[0-9]{9}$/;
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^\+33[1-9]\d{8}$/;
     return phoneRegex.test(phone);
   };
 
-  const isValidPin = (pin: string): boolean => {
-    const pinRegex = /^[0-9]{4,6}$/;
+  const isValidPin = (pin: string) => {
+    const pinRegex = /^\d{4,6}$/;
     return pinRegex.test(pin);
   };
 
-  // Computed validation states
-  const emailValid = isValidEmail(email);
-  const passwordValid = password.length > 0;
-  const phoneValid = isValidPhone(phone);
-  const pinValid = isValidPin(pin);
-
-  const canSubmitAdmin = emailValid && passwordValid;
-  const canSubmitDriver = phoneValid && pinValid;
-
-  // Admin login handler
   const handleAdminLogin = async () => {
-    console.log('User tapped Admin login button');
-    setLoadingAdmin(true);
-    setAdminError('');
+    console.log('User tapped Admin Login button');
+
+    if (!isValidEmail(email)) {
+      Alert.alert('Erreur', 'Veuillez entrer une adresse email valide');
+      return;
+    }
+
+    if (!password) {
+      Alert.alert('Erreur', 'Veuillez entrer votre mot de passe');
+      return;
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      Alert.alert('Erreur', 'Supabase n\'est pas configuré. Veuillez vérifier votre configuration.');
+      return;
+    }
+
+    setAdminLoading(true);
+    console.log('Submitting admin login with email:', email);
 
     try {
-      console.log('Attempting admin login with email:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password,
@@ -74,169 +78,118 @@ export default function LoginScreen() {
 
       if (error) {
         console.error('Admin login error:', error);
-        
-        // Provide user-friendly French error messages
-        let errorMessage = 'Problème réseau ou serveur.';
-        
-        if (error.message.includes('Invalid login credentials') || 
-            error.message.includes('invalid login credentials') ||
-            error.message.includes('Invalid email or password')) {
-          errorMessage = 'Identifiants incorrects.';
-        } else if (error.message.includes('Email not confirmed')) {
-          errorMessage = 'Email non confirmé.';
-        } else if (error.message.includes('network') || error.message.includes('fetch')) {
-          errorMessage = 'Problème de connexion réseau.';
-        }
-        
-        setAdminError(errorMessage);
+        Alert.alert('Erreur de connexion', 'Identifiants incorrects ou problème réseau');
       } else {
         console.log('Admin login successful, navigating to /router');
         router.replace('/router');
       }
     } catch (error) {
       console.error('Admin login exception:', error);
-      setAdminError('Problème réseau ou serveur.');
+      Alert.alert('Erreur', 'Une erreur est survenue lors de la connexion');
     } finally {
-      setLoadingAdmin(false);
+      setAdminLoading(false);
     }
   };
 
-  // Driver login handler (placeholder)
-  const handleDriverLogin = () => {
-    console.log('User tapped Driver login button');
-    setLoadingDriver(true);
+  const handleDriverLogin = async () => {
+    console.log('User tapped Driver Login button');
 
-    // Placeholder: Store phone and PIN in state and show message
-    console.log('Driver login attempt:', { phone, pin });
-    
+    if (!isValidPhone(phone)) {
+      Alert.alert('Erreur', 'Veuillez entrer un numéro de téléphone valide (+33...)');
+      return;
+    }
+
+    if (!isValidPin(pin)) {
+      Alert.alert('Erreur', 'Le PIN doit contenir 4 à 6 chiffres');
+      return;
+    }
+
+    setDriverLoading(true);
+    console.log('Driver login placeholder - phone:', phone, 'pin:', pin);
+
+    // Placeholder for driver login
     setTimeout(() => {
+      setDriverLoading(false);
       Alert.alert(
         'Information',
-        `Connexion chauffeur sera activée à l'étape Page 2/4.\n\nTéléphone: ${phone}\nPIN: ${pin}`,
-        [{ text: 'OK' }]
+        'La connexion chauffeur sera activée à l\'étape Page 2/4.'
       );
-      setLoadingDriver(false);
     }, 500);
   };
 
+  const emailPlaceholder = 'Email';
+  const passwordPlaceholder = 'Mot de passe';
+  const phonePlaceholder = 'Téléphone (+33...)';
+  const pinPlaceholder = 'PIN (4-6 chiffres)';
+  const adminTitle = 'Chef d\'équipe / Admin';
+  const driverTitle = 'Chauffeur';
+  const loginButtonText = 'Se connecter';
+  const showPasswordText = 'Afficher';
+  const hidePasswordText = 'Masquer';
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
-      <Stack.Screen
-        options={{
-          title: 'Connexion',
-          headerShown: true,
-        }}
-      />
-      
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <Stack.Screen options={{ title: 'Connexion', headerShown: true }} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Admin/Team Leader Section */}
           <View style={[styles.card, { backgroundColor: colors.card }]}>
             <Text style={[styles.cardTitle, { color: colors.text }]}>
-              Chef d'équipe / Admin
+              {adminTitle}
             </Text>
 
-            {/* Email Input */}
             <View style={styles.inputContainer}>
               <TextInput
-                style={[
-                  styles.input,
-                  { 
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    borderColor: email.length > 0 && !emailValid ? '#EF4444' : colors.border,
-                  }
-                ]}
-                placeholder="Email"
-                placeholderTextColor={colors.textSecondary}
+                style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+                placeholder={emailPlaceholder}
+                placeholderTextColor={colors.text + '80'}
                 value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  setAdminError('');
-                }}
+                onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                autoCorrect={false}
-                editable={!loadingAdmin}
+                autoComplete="email"
+                editable={!adminLoading}
               />
-              {email.length > 0 && !emailValid && (
-                <Text style={styles.errorText}>
-                  Format d'email invalide.
-                </Text>
-              )}
             </View>
 
-            {/* Password Input */}
             <View style={styles.inputContainer}>
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={[
-                    styles.input,
-                    styles.passwordInput,
-                    { 
-                      backgroundColor: colors.background,
-                      color: colors.text,
-                      borderColor: colors.border,
-                    }
-                  ]}
-                  placeholder="Mot de passe"
-                  placeholderTextColor={colors.textSecondary}
-                  value={password}
-                  onChangeText={(text) => {
-                    setPassword(text);
-                    setAdminError('');
-                  }}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  editable={!loadingAdmin}
-                />
-                <TouchableOpacity
-                  style={styles.eyeButton}
-                  onPress={() => setShowPassword(!showPassword)}
-                  disabled={loadingAdmin}
-                >
-                  <IconSymbol
-                    ios_icon_name={showPassword ? 'eye.slash' : 'eye'}
-                    android_material_icon_name={showPassword ? 'visibility-off' : 'visibility'}
-                    size={20}
-                    color={colors.textSecondary}
-                  />
-                </TouchableOpacity>
-              </View>
+              <TextInput
+                style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+                placeholder={passwordPlaceholder}
+                placeholderTextColor={colors.text + '80'}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoComplete="password"
+                editable={!adminLoading}
+              />
+              <TouchableOpacity
+                style={styles.showPasswordButton}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Text style={[styles.showPasswordText, { color: colors.primary }]}>
+                  {showPassword ? hidePasswordText : showPasswordText}
+                </Text>
+              </TouchableOpacity>
             </View>
 
-            {/* Admin Error Message */}
-            {adminError.length > 0 && (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>
-                  {adminError}
-                </Text>
-              </View>
-            )}
-
-            {/* Admin Login Button */}
             <TouchableOpacity
               style={[
                 styles.button,
-                { backgroundColor: '#10B981' },
-                (!canSubmitAdmin || loadingAdmin) && styles.buttonDisabled,
+                { backgroundColor: colors.primary },
+                adminLoading && styles.buttonDisabled,
               ]}
               onPress={handleAdminLogin}
-              disabled={!canSubmitAdmin || loadingAdmin}
+              disabled={adminLoading}
             >
-              {loadingAdmin ? (
-                <ActivityIndicator color="#FFFFFF" />
+              {adminLoading ? (
+                <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>
-                  Se connecter
-                </Text>
+                <Text style={styles.buttonText}>{loginButtonText}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -244,81 +197,49 @@ export default function LoginScreen() {
           {/* Driver Section */}
           <View style={[styles.card, { backgroundColor: colors.card }]}>
             <Text style={[styles.cardTitle, { color: colors.text }]}>
-              Chauffeur
+              {driverTitle}
             </Text>
 
-            {/* Phone Input */}
             <View style={styles.inputContainer}>
               <TextInput
-                style={[
-                  styles.input,
-                  { 
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    borderColor: phone.length > 0 && !phoneValid ? '#EF4444' : colors.border,
-                  }
-                ]}
-                placeholder="Téléphone (+33...)"
-                placeholderTextColor={colors.textSecondary}
+                style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+                placeholder={phonePlaceholder}
+                placeholderTextColor={colors.text + '80'}
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
                 autoCapitalize="none"
-                autoCorrect={false}
-                editable={!loadingDriver}
+                editable={!driverLoading}
               />
-              {phone.length > 0 && !phoneValid && (
-                <Text style={styles.errorText}>
-                  Format de téléphone invalide (+33...).
-                </Text>
-              )}
             </View>
 
-            {/* PIN Input */}
             <View style={styles.inputContainer}>
               <TextInput
-                style={[
-                  styles.input,
-                  { 
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    borderColor: pin.length > 0 && !pinValid ? '#EF4444' : colors.border,
-                  }
-                ]}
-                placeholder="PIN (4-6 chiffres)"
-                placeholderTextColor={colors.textSecondary}
+                style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+                placeholder={pinPlaceholder}
+                placeholderTextColor={colors.text + '80'}
                 value={pin}
                 onChangeText={setPin}
-                keyboardType="numeric"
-                maxLength={6}
+                keyboardType="number-pad"
                 secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!loadingDriver}
+                maxLength={6}
+                editable={!driverLoading}
               />
-              {pin.length > 0 && !pinValid && (
-                <Text style={styles.errorText}>
-                  PIN numérique (4-6 chiffres).
-                </Text>
-              )}
             </View>
 
-            {/* Driver Login Button */}
             <TouchableOpacity
               style={[
                 styles.button,
-                { backgroundColor: '#3B82F6' },
-                (!canSubmitDriver || loadingDriver) && styles.buttonDisabled,
+                { backgroundColor: colors.primary },
+                driverLoading && styles.buttonDisabled,
               ]}
               onPress={handleDriverLogin}
-              disabled={!canSubmitDriver || loadingDriver}
+              disabled={driverLoading}
             >
-              {loadingDriver ? (
-                <ActivityIndicator color="#FFFFFF" />
+              {driverLoading ? (
+                <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>
-                  Se connecter
-                </Text>
+                <Text style={styles.buttonText}>{loginButtonText}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -337,12 +258,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingTop: 24,
+    gap: 20,
   },
   card: {
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -351,50 +271,39 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: '600',
     marginBottom: 20,
   },
   inputContainer: {
     marginBottom: 16,
-  },
-  input: {
-    borderRadius: 8,
-    padding: 14,
-    fontSize: 16,
-    borderWidth: 1,
-  },
-  passwordContainer: {
     position: 'relative',
   },
-  passwordInput: {
-    paddingRight: 50,
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
   },
-  eyeButton: {
+  showPasswordButton: {
     position: 'absolute',
-    right: 14,
-    top: 14,
-    padding: 4,
+    right: 12,
+    top: 12,
   },
-  errorContainer: {
-    marginBottom: 12,
-  },
-  errorText: {
-    color: '#EF4444',
+  showPasswordText: {
     fontSize: 14,
-    marginTop: 6,
+    fontWeight: '500',
   },
   button: {
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 8,
   },
   buttonDisabled: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },

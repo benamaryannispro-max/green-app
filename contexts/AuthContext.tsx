@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase, Profile } from '@/lib/supabase';
+import { getSupabaseClient, Profile } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -23,6 +23,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('AuthProvider: Initializing auth state');
     
+    const supabase = getSupabaseClient();
+    
+    // If Supabase is not configured, set loading to false and return
+    if (!supabase) {
+      console.warn('AuthProvider: Supabase client not available');
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('AuthProvider: Initial session loaded', session ? 'Session exists' : 'No session');
@@ -54,6 +63,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadProfile = async (userId: string) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('AuthProvider: Cannot load profile - Supabase client not available');
+      setLoading(false);
+      return;
+    }
+
     try {
       console.log('AuthProvider: Loading profile for user', userId);
       const { data, error } = await supabase
@@ -85,9 +101,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    const supabase = getSupabaseClient();
+    
     try {
       console.log('AuthProvider: Signing out');
-      await supabase.auth.signOut();
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
       setProfile(null);
     } catch (error) {
       console.error('AuthProvider: Error signing out', error);
