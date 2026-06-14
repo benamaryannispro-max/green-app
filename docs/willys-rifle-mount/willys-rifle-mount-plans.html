@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plans techniques — Support porte-fusil pare-brise Willys MB / Ford GPW</title>
+<style>
+  :root{
+    --ink:#111;
+    --thin:0.18;     /* mm : traits de cote */
+    --thick:0.5;     /* mm : contours vus  */
+    --est:#b00020;   /* rouge : cote estimée */
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#666;font-family:"Segoe UI",Arial,Helvetica,sans-serif;color:var(--ink);}
+  /* ---------- Feuille A4 paysage ---------- */
+  .sheet{
+    position:relative;
+    width:297mm;height:210mm;
+    background:#fff;
+    margin:8mm auto;
+    padding:6mm 6mm 0 6mm;
+    box-shadow:0 0 6px rgba(0,0,0,.5);
+    overflow:hidden;
+    page-break-after:always;
+    display:flex;flex-direction:column;
+  }
+  .frame{position:absolute;inset:5mm;border:0.4mm solid #000;pointer-events:none;}
+  .sheet h1{font-size:13pt;margin:0 0 1mm 0;}
+  .sheet h2{font-size:11pt;margin:0 0 1mm 0;border-bottom:0.3mm solid #000;padding-bottom:0.5mm;}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:0.4mm solid #000;padding-bottom:1.5mm;margin-bottom:2mm;}
+  .head .t{font-size:9pt;line-height:1.25;}
+  .head .badge{font-size:8pt;text-align:right;line-height:1.3;}
+  .draw-area{flex:1 1 auto;display:flex;gap:2mm;min-height:0;}
+  svg{display:block;width:100%;height:100%;}
+  /* ---------- Cartouche (title block) ---------- */
+  .cartouche{position:absolute;right:5mm;bottom:5mm;width:120mm;border:0.4mm solid #000;font-size:7.2pt;background:#fff;}
+  .cartouche table{border-collapse:collapse;width:100%;}
+  .cartouche td{border:0.2mm solid #000;padding:0.6mm 1.2mm;vertical-align:top;}
+  .cartouche .big{font-size:9pt;font-weight:bold;}
+  .cartouche .lbl{color:#555;font-size:6pt;text-transform:uppercase;letter-spacing:.3px;}
+  /* ---------- Tables texte ---------- */
+  table.data{border-collapse:collapse;width:100%;font-size:8pt;}
+  table.data th,table.data td{border:0.2mm solid #444;padding:1mm 1.5mm;text-align:left;vertical-align:top;}
+  table.data th{background:#e9e9e9;}
+  table.data tr:nth-child(even) td{background:#f6f6f6;}
+  .est{color:var(--est);font-weight:bold;}
+  .legend{font-size:7.5pt;line-height:1.4;}
+  .cols{display:flex;gap:6mm;}
+  .cols>div{flex:1;}
+  ul.tight{margin:.5mm 0 .5mm 4mm;padding:0;}
+  ul.tight li{margin:.4mm 0;}
+  .note{font-size:7.5pt;background:#fff7d6;border:0.2mm solid #c9a800;padding:1.5mm;border-radius:1mm;}
+  .scale-tag{font-size:7pt;color:#333;}
+  /* ---------- SVG classes ---------- */
+  .vis{stroke:#000;fill:none;}            /* contour vu */
+  .hid{stroke:#000;fill:none;stroke-dasharray:1.4 1.1;}  /* arête cachée */
+  .ctr{stroke:#0050c8;fill:none;stroke-dasharray:5 1.2 1 1.2;}  /* axe */
+  .dim{stroke:#b00020;fill:none;}          /* trait de cote (rouge=lisible) */
+  .dimtxt{fill:#b00020;font-size:3px;font-family:Arial;text-anchor:middle;}
+  .dimtxt.est{fill:#b00020;}
+  .lbl{fill:#000;font-size:3.2px;font-family:Arial;}
+  .lblb{fill:#000;font-size:3.4px;font-weight:bold;font-family:Arial;}
+  .vname{fill:#000;font-size:4.2px;font-weight:bold;font-family:Arial;text-anchor:middle;}
+  .hatch{stroke:#000;stroke-width:0.18;}
+  .balloon{fill:#fff;stroke:#000;stroke-width:0.3;}
+  .baltxt{fill:#000;font-size:3.6px;font-weight:bold;font-family:Arial;text-anchor:middle;dominant-baseline:central;}
+  .rifle{fill:#d9c19a;stroke:#5a4423;stroke-width:0.5;}
+  .metal{fill:#cfd4d8;stroke:#222;stroke-width:0.5;}
+  .liner{fill:#7a5230;stroke:#3a2410;stroke-width:0.3;}
+  @media screen{ body{padding:6mm 0;} }
+  @media print{
+    html,body{background:#fff;}
+    .sheet{margin:0;box-shadow:none;width:297mm;height:210mm;}
+    @page{size:A4 landscape;margin:0;}
+    .screen-only{display:none!important;}
+  }
+  .screen-only{max-width:297mm;margin:4mm auto;color:#fff;font-size:10pt;line-height:1.5;}
+  .screen-only a{color:#ffd76b;}
+  .screen-only .box{background:#222;padding:4mm 6mm;border-radius:2mm;}
+</style>
+</head>
+<body>
+
+<!-- ============================== INSTRUCTIONS ECRAN ============================== -->
+<div class="screen-only">
+  <div class="box">
+    <b>Jeu de plans — Support porte-fusil sur pare-brise Willys MB / Ford GPW.</b><br>
+    Pour obtenir le PDF / l'impression atelier : <b>Ctrl+P</b> → Destination « Enregistrer au format PDF » →
+    Format <b>A4 paysage</b>, Marges <b>Aucune</b>, <b>Échelle 100 %</b> (ne pas cocher « Ajuster à la page »),
+    cocher « Graphiques d'arrière-plan ».<br>
+    ⚠️ Les vues portent leur échelle (1:1, 1:2, 1:5…). Pour découper/plier directement, utilisez les
+    <b>développés (gabarits) à l'échelle 1:1</b> — vérifiez d'abord le réglet de contrôle imprimé sur chaque gabarit.<br>
+    <span style="color:#ff9a9a">Cotes en rouge & marquées « est. » = estimées (voir feuille 1).</span>
+  </div>
+</div>
+
+<!-- ============================== FEUILLE 1 — GARDE / NOTES ============================== -->
+<section class="sheet" id="s-cover">
+  <div class="frame"></div>
+  <div class="head">
+    <div class="t">
+      <h1>SUPPORT PORTE-FUSIL SUR CADRE DE PARE-BRISE</h1>
+      <b>Jeep Willys MB / Ford GPW — 1/4 ton 4×4 (US Army, WWII)</b><br>
+      « Windshield-mounted rifle / gun mount » — type M1 Garand / M1 Carbine / Thompson<br>
+      Jeu de plans de reproduction pour atelier — découpe &amp; pliage tôle
+    </div>
+    <div class="badge">
+      Dossier&nbsp;: <b>WMB-RM-2026</b><br>
+      Feuille <b>1 / 6</b> — Garde &amp; nomenclature<br>
+      Établi le 2026-06-14<br>
+      Unités&nbsp;: <b>mm</b> — Tol. gén. ISO 2768-m
+    </div>
+  </div>
+
+  <div class="cols" style="flex:1;min-height:0;">
+    <div style="flex:1.15;">
+      <h2>1. Synthèse de recherche (références d'origine)</h2>
+      <p class="legend" style="margin:.5mm 0 1.5mm;">
+        Le porte-fusil de pare-brise des MB/GPW est un accessoire monté à l'<b>intérieur</b> du cadre de
+        pare-brise, sous la vitre, côté passager (droit) le plus souvent. Il maintient un fusil (M1 Garand,
+        M1 Carbine, Springfield, Enfield, voire BAR). Documenté pour la première fois en <b>octobre 1942</b>,
+        monté en usine à partir de <b>~septembre 1943</b> ; sur les caisses antérieures il s'agissait d'un
+        <i>Field Mod Kit</i>. Deux configurations historiques coexistent&nbsp;:
+      </p>
+      <ul class="tight legend">
+        <li><b>(A) Râtelier horizontal</b> (« gun rack ») fixé en travers, bras à came + butée caoutchouc,
+            2 pattes intérieures gainées de toile.</li>
+        <li><b>(B) Maintien vertical 2 brackets</b> — <b>objet du présent dossier</b> — une pince
+            <b>inférieure</b> (berceau de crosse) et une pince <b>supérieure</b> sur le cadre (collier de canon).</li>
+      </ul>
+      <p class="legend" style="margin:1mm 0;">
+        <b>Fixation d'origine&nbsp;:</b> boulon à tête bombée <b>collet carré (« coach / carriage »)</b> traversant
+        un trou <b>carré</b> dans la tôle, écrou hexagonal + rondelle élastique (Grower) au dos. Tôle d'origine
+        ≈ <b>16 ga (1,5–1,6 mm)</b>. Finition <b>Olive Drab</b> (O.D. n°9 / FS 24087).
+      </p>
+      <p class="legend" style="margin:1mm 0;">
+        <b>Repères de pièces marchande/historiques</b> (les n° NSN/ORD d'origine exacts ne sont pas publiés
+        de façon fiable)&nbsp;: brackets pare-brise <b>G</b> côté gauche (LH) &amp; droit (RH) vendus séparément
+        (JeepsterMan, Kaiser Willys, DeBella, QMI, JeepVillage) ; ensemble râtelier réf. marchande
+        <b>MOP047</b> ; cadre de pare-brise MB/GPW réf. <b>A-3210</b> (= largeur cadre 50″, hauteur 22¼″).
+      </p>
+      <div class="note">
+        <b>Honnêteté des cotes&nbsp;:</b> aucune cote d'atelier d'origine cotée n'est publiée librement.
+        Les dimensions ci-après sont <b>reconstituées</b> à partir (1) des photos de restaurateurs/clubs,
+        (2) de l'enveloppe réelle du fusil M1 Garand (L≈1105&nbsp;mm, fût/garde-main Ø≈30&nbsp;mm, plaque de
+        couche ≈130×48&nbsp;mm) et (3) de la géométrie du cadre de pare-brise MB (1270×565&nbsp;mm).
+        Toute cote <span class="est">en rouge marquée « est. »</span> est une <b>proposition réaliste</b>, à
+        recaler sur votre véhicule avant découpe définitive.
+      </div>
+    </div>
+
+    <div style="flex:1;">
+      <h2>2. Nomenclature (BOM) — repères ballons</h2>
+      <table class="data">
+        <tr><th>Rep.</th><th>Désignation</th><th>Matière / spéc.</th><th>Qté*</th></tr>
+        <tr><td>1</td><td>Collier de canon (pince supérieure) — corps</td><td>Acier S235, ép. 2,5</td><td>1</td></tr>
+        <tr><td>1a</td><td>Platine d'appui collier (sur cadre)</td><td>Acier S235, ép. 2,5</td><td>1</td></tr>
+        <tr><td>1b</td><td>Oreilles de serrage collier</td><td>Acier S235, ép. 2,5</td><td>2</td></tr>
+        <tr><td>2</td><td>Berceau de crosse (pince inférieure) — corps en U</td><td>Acier S235, ép. 2,5</td><td>1</td></tr>
+        <tr><td>2a</td><td>Platine d'appui berceau (sur cadre)</td><td>Acier S235, ép. 2,5</td><td>1</td></tr>
+        <tr><td>3</td><td>Boulon tête bombée collet carré M6×20 (style coach)</td><td>Acier zingué cl.8.8</td><td>4</td></tr>
+        <tr><td>4</td><td>Écrou hexagonal M6</td><td>Acier zingué cl.8</td><td>6</td></tr>
+        <tr><td>5</td><td>Rondelle élastique (Grower) Ø6</td><td>Acier ressort</td><td>6</td></tr>
+        <tr><td>6</td><td>Boulon M6×35 + écrou à oreilles (serrage collier)</td><td>Acier zingué</td><td>1</td></tr>
+        <tr><td>7</td><td>Sangle 25&nbsp;mm coton/nylon + boucle à friction</td><td>Sangle + boucle laiton</td><td>1</td></tr>
+        <tr><td>8</td><td>Garniture caoutchouc ép.3 (intérieur collier)</td><td>EPDM / NBR 3&nbsp;mm</td><td>1</td></tr>
+        <tr><td>9</td><td>Garniture feutre/toile ép.4 (berceau)</td><td>Feutre 4&nbsp;mm + toile O.D.</td><td>1</td></tr>
+      </table>
+      <p class="legend" style="margin:.8mm 0;">* Qté pour <b>un</b> côté. Pour un montage <b>gauche + droit</b>, doubler (pièces 1,1a,1b,2,2a en miroir ; visserie ×2).</p>
+
+      <h2 style="margin-top:1mm;">3. Matière &amp; mise en œuvre</h2>
+      <ul class="tight legend">
+        <li><b>Tôle&nbsp;:</b> acier doux <b>S235JR</b> (ou DC01 emboutissable), <b>ép. 2,5&nbsp;mm</b>
+            recommandée (robuste). Variante « rivet-counter » fidèle&nbsp;: <b>1,5&nbsp;mm (16 ga)</b>.</li>
+        <li><b>Rayon de pliage intérieur&nbsp;:</b> <b>R3</b> (≈ 1×ép.) ; cintrage collier sur mandrin Ø36.</li>
+        <li><b>Assemblage&nbsp;:</b> soudure MIG/MAG points + cordon, ou rivets Ø4. Platines soudées au corps.</li>
+        <li><b>Trous&nbsp;:</b> perçage Ø6,5 (passage M6). Trou <b>carré 6,3×6,3</b> optionnel côté tôle pour
+            collet carré du boulon coach (sinon Ø6,5 + boulon tête H).</li>
+        <li><b>Finition&nbsp;:</b> dégraissage → apprêt zinc → peinture <b>Olive Drab mat</b>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cartouche">
+    <table>
+      <tr>
+        <td colspan="2" class="lbl">Désignation</td>
+        <td colspan="2" class="lbl">Échelle / Format</td>
+      </tr>
+      <tr>
+        <td colspan="2" class="big">Porte-fusil pare-brise MB/GPW — Garde &amp; BOM</td>
+        <td colspan="2" class="big">Voir vues / A4 ↔ A3</td>
+      </tr>
+      <tr>
+        <td class="lbl">Dessiné</td><td>Atelier resto</td>
+        <td class="lbl">Date</td><td>2026-06-14</td>
+      </tr>
+      <tr>
+        <td class="lbl">Réf.</td><td>WMB-RM-2026</td>
+        <td class="lbl">Feuille</td><td>1 / 6</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================== FEUILLES DESSIN (générées) ============================== -->
+<section class="sheet" id="s-R1"><div class="frame"></div>
+  <div class="head"><div class="t"><h1>SUPPORT DROIT (côté passager) — Rep.&nbsp;1 : COLLIER DE CANON</h1>
+    Pince supérieure sur cadre de pare-brise — vues normalisées (1<sup>er</sup> dièdre / ISO-E)</div>
+    <div class="badge">WMB-RM-2026 — Feuille <b>2 / 6</b><br>Matière&nbsp;: acier S235 ép.2,5<br>Tol. ISO 2768-m</div></div>
+  <div class="draw-area"><svg id="svgR1" viewBox="0 0 283 150" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="cartouche"><table>
+    <tr><td colspan="2" class="lbl">Pièce</td><td colspan="2" class="lbl">Échelle</td></tr>
+    <tr><td colspan="2" class="big">Rep.1 — Collier de canon (DROIT)</td><td colspan="2" class="big">1:1 &amp; 1:2</td></tr>
+    <tr><td class="lbl">Réf.</td><td>WMB-RM-2026/2</td><td class="lbl">Feuille</td><td>2 / 6</td></tr>
+  </table></div>
+</section>
+
+<section class="sheet" id="s-R2"><div class="frame"></div>
+  <div class="head"><div class="t"><h1>SUPPORT DROIT (côté passager) — Rep.&nbsp;2 : BERCEAU DE CROSSE</h1>
+    Pince inférieure — vues normalisées (1<sup>er</sup> dièdre / ISO-E)</div>
+    <div class="badge">WMB-RM-2026 — Feuille <b>3 / 6</b><br>Matière&nbsp;: acier S235 ép.2,5<br>Tol. ISO 2768-m</div></div>
+  <div class="draw-area"><svg id="svgR2" viewBox="0 0 283 150" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="cartouche"><table>
+    <tr><td colspan="2" class="lbl">Pièce</td><td colspan="2" class="lbl">Échelle</td></tr>
+    <tr><td colspan="2" class="big">Rep.2 — Berceau de crosse (DROIT)</td><td colspan="2" class="big">1:1 &amp; 1:2</td></tr>
+    <tr><td class="lbl">Réf.</td><td>WMB-RM-2026/3</td><td class="lbl">Feuille</td><td>3 / 6</td></tr>
+  </table></div>
+</section>
+
+<section class="sheet" id="s-L1"><div class="frame"></div>
+  <div class="head"><div class="t"><h1>SUPPORT GAUCHE (côté conducteur) — Rep.&nbsp;1 : COLLIER DE CANON</h1>
+    Image miroir du support droit — cotes identiques</div>
+    <div class="badge">WMB-RM-2026 — Feuille <b>4 / 6</b><br>Matière&nbsp;: acier S235 ép.2,5<br>Tol. ISO 2768-m</div></div>
+  <div class="draw-area"><svg id="svgL1" viewBox="0 0 283 150" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="cartouche"><table>
+    <tr><td colspan="2" class="lbl">Pièce</td><td colspan="2" class="lbl">Échelle</td></tr>
+    <tr><td colspan="2" class="big">Rep.1 — Collier de canon (GAUCHE)</td><td colspan="2" class="big">1:1 &amp; 1:2</td></tr>
+    <tr><td class="lbl">Réf.</td><td>WMB-RM-2026/4</td><td class="lbl">Feuille</td><td>4 / 6</td></tr>
+  </table></div>
+</section>
+
+<section class="sheet" id="s-L2"><div class="frame"></div>
+  <div class="head"><div class="t"><h1>SUPPORT GAUCHE (côté conducteur) — Rep.&nbsp;2 : BERCEAU DE CROSSE</h1>
+    Image miroir du support droit — cotes identiques</div>
+    <div class="badge">WMB-RM-2026 — Feuille <b>5 / 6</b><br>Matière&nbsp;: acier S235 ép.2,5<br>Tol. ISO 2768-m</div></div>
+  <div class="draw-area"><svg id="svgL2" viewBox="0 0 283 150" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="cartouche"><table>
+    <tr><td colspan="2" class="lbl">Pièce</td><td colspan="2" class="lbl">Échelle</td></tr>
+    <tr><td colspan="2" class="big">Rep.2 — Berceau de crosse (GAUCHE)</td><td colspan="2" class="big">1:1 &amp; 1:2</td></tr>
+    <tr><td class="lbl">Réf.</td><td>WMB-RM-2026/5</td><td class="lbl">Feuille</td><td>5 / 6</td></tr>
+  </table></div>
+</section>
+
+<section class="sheet" id="s-ASM"><div class="frame"></div>
+  <div class="head"><div class="t"><h1>VUE DE MONTAGE LATÉRALE — fixation sur cadre de pare-brise &amp; position du fusil</h1>
+    Coupe latérale schématique (côté passager) — fusil M1 Garand en place</div>
+    <div class="badge">WMB-RM-2026 — Feuille <b>6 / 6</b><br>Échelle 1:5<br>Repères = BOM feuille 1</div></div>
+  <div class="draw-area"><svg id="svgASM" viewBox="0 0 283 150" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="cartouche"><table>
+    <tr><td colspan="2" class="lbl">Vue</td><td colspan="2" class="lbl">Échelle</td></tr>
+    <tr><td colspan="2" class="big">Montage latéral + implantation</td><td colspan="2" class="big">1:5</td></tr>
+    <tr><td class="lbl">Réf.</td><td>WMB-RM-2026/6</td><td class="lbl">Feuille</td><td>6 / 6</td></tr>
+  </table></div>
+</section>
+
+<script>
+/* =====================================================================
+   Mini-bibliothèque de dessin technique (SVG) — unités = mm sur papier.
+   Chaque "vue" reçoit une origine (ox,oy) en mm-papier, une échelle s
+   (mm-papier / mm-réel) et un signe miroir sx (+1 / -1).
+   Les fonctions de cote prennent des coordonnées RÉELLES (mm pièce) et
+   affichent la valeur réelle, quelle que soit l'échelle.
+   ===================================================================== */
+const SVGNS="http://www.w3.org/2000/svg";
+function el(p,tag,attrs){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);p.appendChild(e);return e;}
+
+function ensureDefs(svg){
+  if(svg.querySelector('defs'))return;
+  const d=el(svg,'defs',{});
+  const m=el(d,'marker',{id:'dimar',markerWidth:'4',markerHeight:'3',refX:'3.6',refY:'1.5',orient:'auto','markerUnits':'userSpaceOnUse'});
+  el(m,'path',{d:'M0,0 L3.6,1.5 L0,3 z',fill:'#b00020'});
+}
+
+function view(svg,ox,oy,s,sx){
+  ensureDefs(svg);
+  sx=sx||1;
+  const g=el(svg,'g',{});
+  const X=x=> ox + x*s*sx;
+  const Y=y=> oy + y*s;
+  const o={g, s, sx, X, Y, ox, oy};
+
+  o.line=(x1,y1,x2,y2,cls)=>el(g,'line',{x1:X(x1),y1:Y(y1),x2:X(x2),y2:Y(y2),class:cls||'vis','stroke-width':(cls==='ctr'||cls==='dim')?0.18:( cls==='hid'?0.25:0.5)});
+  o.rect=(x,y,w,h,cls)=>el(g,'rect',{x:X(Math.min(x,x+w*sx)),y:Y(y),width:Math.abs(w*s),height:h*s,class:cls||'vis','stroke-width':0.5});
+  o.circle=(cx,cy,r,cls)=>el(g,'circle',{cx:X(cx),cy:Y(cy),r:r*s,class:cls||'vis','stroke-width':(cls==='ctr')?0.18:0.5});
+  o.poly=(pts,cls,closed)=>{let d=pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(2)+' '+Y(p[1]).toFixed(2)).join(' ')+(closed?' Z':'');return el(g,'path',{d,class:cls||'vis','stroke-width':0.5});};
+  // arc absolu: de (x1,y1) à (x2,y2), rayon r réel, large/sweep
+  o.arc=(x1,y1,x2,y2,r,large,sweep,cls)=>{
+    let sw=sweep; if(sx<0) sw=sweep?0:1; // miroir inverse le sens
+    const d=`M ${X(x1).toFixed(2)} ${Y(y1).toFixed(2)} A ${(r*s).toFixed(2)} ${(r*s).toFixed(2)} 0 ${large} ${sw} ${X(x2).toFixed(2)} ${Y(y2).toFixed(2)}`;
+    return el(g,'path',{d,class:cls||'vis',fill:'none','stroke-width':0.5});
+  };
+  // axes centrés
+  o.cmark=(cx,cy,r)=>{o.line(cx-r-2/s,cy,cx+r+2/s,cy,'ctr');o.line(cx,cy-r-2/s,cx,cy+r+2/s,'ctr');};
+
+  o.txt=(x,y,t,cls,anchor,dx,dy)=>{const e=el(g,'text',{x:X(x)+(dx||0),y:Y(y)+(dy||0),class:cls||'lbl'});e.textContent=t;if(anchor)e.setAttribute('text-anchor',anchor);return e;};
+
+  /* ---- Cote horizontale entre x1 et x2, ligne de cote à yLevel (réel) ---- */
+  o.dimH=(x1,x2,yFeat,yLevel,txt,est)=>{
+    const ext=1.5;
+    // lignes d'extension
+    o.line(x1,yFeat,x1,yLevel + (yLevel>yFeat?ext/s:-ext/s),'dim');
+    o.line(x2,yFeat,x2,yLevel + (yLevel>yFeat?ext/s:-ext/s),'dim');
+    el(g,'line',{x1:X(x1),y1:Y(yLevel),x2:X(x2),y2:Y(yLevel),class:'dim','stroke-width':0.18,'marker-start':'url(#dimar)','marker-end':'url(#dimar)'});
+    const t=el(g,'text',{x:(X(x1)+X(x2))/2,y:Y(yLevel)-1.1,class:'dimtxt'+(est?' est':'')});
+    t.textContent=(txt!=null?txt:Math.abs(x2-x1).toFixed(0))+(est?' (est.)':'');
+  };
+  /* ---- Cote verticale entre y1 et y2, ligne de cote à xLevel ---- */
+  o.dimV=(y1,y2,xFeat,xLevel,txt,est)=>{
+    const ext=1.5;
+    o.line(xFeat,y1,xLevel+(sx>0?(xLevel>xFeat?ext/s:-ext/s):(xLevel>xFeat?-ext/s:ext/s)),y1,'dim');
+    o.line(xFeat,y2,xLevel+(sx>0?(xLevel>xFeat?ext/s:-ext/s):(xLevel>xFeat?-ext/s:ext/s)),y2,'dim');
+    el(g,'line',{x1:X(xLevel),y1:Y(y1),x2:X(xLevel),y2:Y(y2),class:'dim','stroke-width':0.18,'marker-start':'url(#dimar)','marker-end':'url(#dimar)'});
+    const t=el(g,'text',{x:X(xLevel),y:(Y(y1)+Y(y2))/2,class:'dimtxt'+(est?' est':''),transform:`rotate(-90 ${X(xLevel)} ${(Y(y1)+Y(y2))/2})`});
+    t.setAttribute('dy','-1.1');
+    t.textContent=(txt!=null?txt:Math.abs(y2-y1).toFixed(0))+(est?' (est.)':'');
+  };
+  /* ---- Renvoi / leader avec texte ---- */
+  o.leader=(x,y,tx,ty,t,est)=>{
+    el(g,'line',{x1:X(x),y1:Y(y),x2:X(tx),y2:Y(ty),class:'dim','stroke-width':0.18,'marker-start':'url(#dimar)'});
+    const e=el(g,'text',{x:X(tx)+(sx>0?1:-1),y:Y(ty),class:'dimtxt'+(est?' est':'')});
+    e.setAttribute('text-anchor',sx>0?'start':'end');
+    e.textContent=t+(est?' (est.)':'');
+  };
+  /* ---- Diamètre / rayon repère ---- */
+  o.dia=(cx,cy,r,t,ang,est)=>{ang=ang||-45;const a=ang*Math.PI/180;
+    o.leader(cx,cy, cx+Math.cos(a)*(r+8/s), cy+Math.sin(a)*(r+8/s), t, est);};
+
+  /* ---- Hachures de coupe dans un rectangle ---- */
+  o.hatch=(x,y,w,h)=>{
+    const step=2; const x0=Math.min(x,x+w*sx)*1, x1=Math.max(x,x+w*sx);
+    const X0=X(Math.min(x,x+w*sx)),X1=X(Math.max(x,x+w*sx)),Y0=Y(y),Y1=Y(y+h);
+    const clip='clip'+Math.random().toString(36).slice(2,7);
+    const cp=el(g,'clipPath',{id:clip});el(cp,'rect',{x:X0,y:Y0,width:X1-X0,height:Y1-Y0});
+    const gg=el(g,'g',{'clip-path':`url(#${clip})`});
+    for(let p=-(Y1-Y0);p<(X1-X0);p+=step){el(gg,'line',{x1:X0+p,y1:Y0,x2:X0+p+(Y1-Y0),y2:Y1,class:'hatch'});}
+  };
+
+  o.balloon=(x,y,n,lx,ly)=>{
+    el(g,'line',{x1:X(x),y1:Y(y),x2:X(lx),y2:Y(ly),class:'dim','stroke-width':0.18,'marker-start':'url(#dimar)'});
+    el(g,'circle',{cx:X(lx),cy:Y(ly),r:2.6,class:'balloon'});
+    const t=el(g,'text',{x:X(lx),y:Y(ly),class:'baltxt'});t.textContent=n;
+  };
+  o.vname=(x,y,t)=>{const e=el(svg,'text',{x:ox+x,y:oy+y,class:'vname'});e.textContent=t;return e;};
+  o.scaleTag=(x,y,t)=>{const e=el(svg,'text',{x:ox+x,y:oy+y,class:'lbl','font-size':'3.4'});e.textContent=t;return e;};
+  return o;
+}
+/* étiquette de vue indépendante (coordonnées papier absolues) */
+function vlabel(svg,x,y,t,scale){
+  const e=el(svg,'text',{x,y,class:'vname'});e.textContent=t;
+  if(scale){const s2=el(svg,'text',{x,y:y+5,class:'lbl','font-size':'3.2'});s2.textContent=scale;}
+}
+function freetxt(svg,x,y,t,cls){const e=el(svg,'text',{x,y,class:cls||'lbl'});e.textContent=t;return e;}
+
+/* =====================================================================
+   PARAMÈTRES DE CONCEPTION (mm réels) — modifiables en un point
+   ===================================================================== */
+const P={
+  // Collier de canon (rep.1)
+  col:{ plW:50, plH:60, plT:2.5, holeD:6.5, holePitch:40, holeTop:10,
+        ringID:36, ringT:2.5, stripW:25, arm:35, gap:16, earL:12, earHole:6.5,
+        barrelD:30, linerT:3, devLen:170 },
+  // Berceau de crosse (rep.2)
+  cra:{ plW:70, plH:70, plT:2.5, holeD:6.5, holePitch:45, holeTop:20,
+        cupWi:55, cupDepth:45, cupWall:50, standoff:25, slotW:27, slotH:4, feltT:4,
+        buttW:48, buttD:38 },
+  // Assemblage
+  asm:{ frameH:565, riflLen:1105, tilt:8, centerDist:430 }
+};
+
+/* =====================================================================
+   FEUILLE 2/4 — COLLIER DE CANON  (rep.1)  — drawUpper(svg, mirror)
+   ===================================================================== */
+function drawUpper(svgId,sx){
+  const svg=document.getElementById(svgId);
+  const C=P.col;
+  const xshift = sx>0?0:283; // recadre le miroir dans le viewBox
+
+  /* ---------- VUE DE FACE (1:1) : on regarde le plan du pare-brise ---------- */
+  // plan: barillet vertical, platine 50x60, trous
+  (()=>{
+    const s=1.0;
+    const v=view(svg, sx>0?34:283-34, 24, s, sx);
+    // platine
+    v.rect(0,0,C.plW,C.plH,'vis');
+    // trous
+    [C.holeTop, C.holeTop+C.holePitch].forEach(yh=>{ v.circle(C.plW/2,yh,C.holeD/2,'vis'); v.cmark(C.plW/2,yh,C.holeD/2); });
+    // strip du collier projeté (bande largeur stripW à droite de la platine)
+    const rx=C.plW+C.arm; // position canon (centre) en x
+    // garde-main / canon (vertical) en pointillés derrière
+    v.line(rx-C.barrelD/2,-6,rx-C.barrelD/2,C.plH+6,'hid');
+    v.line(rx+C.barrelD/2,-6,rx+C.barrelD/2,C.plH+6,'hid');
+    v.cmark(rx,C.plH/2,C.barrelD/2);
+    // bande collier (hauteur stripW centrée)
+    const yb=(C.plH-C.stripW)/2;
+    v.rect(C.plW,yb,C.arm,C.stripW,'vis');
+    v.rect(rx-C.ringID/2-C.ringT,yb,C.ringID+2*C.ringT,C.stripW,'vis');
+    // cotes
+    v.dimH(0,C.plW,C.plH,C.plH+10,null,false);
+    v.dimV(0,C.plH,0,-9,null,false);
+    v.dimV(C.holeTop,C.holeTop+C.holePitch,C.plW/2,C.plW+6,'40',false);
+    v.dimV(yb,yb+C.stripW,C.plW+C.arm+C.ringID/2+C.ringT,rx+C.ringID/2+C.ringT+8,'25 (larg. bande)',true);
+    v.dia(C.plW/2,C.holeTop,C.holeD/2,'2×Ø6,5',-130);
+    v.leader(rx,C.plH/2,rx,C.plH+18,'Axe canon');
+  })();
+  vlabel(svg, sx>0?34:283-90, 16, 'A — VUE DE FACE', 'éch. 1:1');
+
+  /* ---------- VUE DE DESSUS (1:1) : on regarde dans l'axe du canon ---------- */
+  (()=>{
+    const s=1.0;
+    const baseX = sx>0?150:283-150, baseY=44;
+    const v=view(svg, baseX, baseY, s, sx);
+    // platine vue de dessus = trait épais (épaisseur 2,5) longueur 50 (sur cadre, à gauche)
+    v.rect(-C.plT,-C.plW/2,C.plT,C.plW,'vis'); v.hatch(-C.plT,-C.plW/2,C.plT,C.plW);
+    // bras
+    v.rect(0,-C.ringT/2-1.5,C.arm- C.ringID/2,C.ringT+3,'vis');
+    // anneau (centre à x=arm)
+    const cx=C.arm;
+    v.circle(cx,0,C.ringID/2+C.ringT,'vis');
+    v.circle(cx,0,C.ringID/2,'vis');
+    // garniture + canon
+    v.circle(cx,0,C.barrelD/2,'hid');
+    v.cmark(cx,0,C.ringID/2+C.ringT+2);
+    // ouverture (gap) côté opposé au cadre + oreilles
+    const gA=Math.asin((C.gap/2)/(C.ringID/2+C.ringT));
+    // oreilles : deux pattes tangentes au gap, s'étendant vers l'extérieur (x+)
+    const ey=C.gap/2, ex=cx+Math.sqrt(Math.max(0,(C.ringID/2+C.ringT)**2-ey**2));
+    v.poly([[ex,ey],[ex+C.earL,ey],[ex+C.earL,ey+2],[ex,ey+2]],'vis',true);
+    v.poly([[ex,-ey],[ex+C.earL,-ey],[ex+C.earL,-ey-2],[ex,-ey-2]],'vis',true);
+    v.circle(ex+C.earL/2,ey+1,C.earHole/2,'hid'); // trou oreille (en bord)
+    // cotes
+    v.dia(cx,0,C.ringID/2,'Ø36 int.',135,true);
+    v.leader(cx+ (C.ringID/2+C.ringT),0, cx+C.ringID/2+C.ringT+10, -10, 'Ø41 ext.',true);
+    v.dimH(0,cx, -C.ringID/2-C.ringT-6, -C.ringID/2-C.ringT-12,'35 (déport)',true);
+    v.dimV(-ey,ey,ex+C.earL, ex+C.earL+8,'16 (ouverture)',true);
+    v.leader(cx,-C.barrelD/2,cx-2,-C.ringID/2-C.ringT-10,'Canon/garde-main Ø30',true);
+    v.balloon(ex+C.earL/2,ey+1,'1b', ex+C.earL+12, ey+10);
+    v.balloon(-C.plT/2,-C.plW/2+5,'1a', -16, -C.plW/2-2);
+    v.balloon(cx,0,'8', cx, C.ringID/2+C.ringT+12);
+  })();
+  vlabel(svg, sx>0?120:283-200, 16, 'B — VUE DE DESSUS', 'éch. 1:1');
+
+  /* ---------- VUE DE CÔTÉ (1:1) ---------- */
+  (()=>{
+    const s=1.0;
+    const v=view(svg, sx>0?245:283-245, 30, s, sx);
+    // platine (épaisseur 2,5 x hauteur 60)
+    v.rect(0,0,C.plT,C.plH,'vis'); v.hatch(0,0,C.plT,C.plH);
+    const yb=(C.plH-C.stripW)/2;
+    // collier vu de côté : profil largeur bande (stripW) projeté en hauteur, anneau Ø41
+    v.rect(C.plT,yb,C.arm,C.stripW,'vis');
+    v.circle(C.plT+C.arm,C.plH/2,C.ringID/2+C.ringT,'vis');
+    v.circle(C.plT+C.arm,C.plH/2,C.ringID/2,'hid');
+    v.cmark(C.plT+C.arm,C.plH/2,C.ringID/2+C.ringT+2);
+    v.dimV(0,C.plH,0,-7,null,false);
+    v.leader(C.plT/2,C.plH,C.plT/2-6,C.plH+8,'ép. 2,5');
+    v.dimV(yb,yb+C.stripW, C.plT+C.arm+C.ringID/2+C.ringT, C.plT+C.arm+C.ringID/2+C.ringT+7,'25',true);
+  })();
+  vlabel(svg, sx>0?226:283-262, 16, 'C — VUE DE CÔTÉ', 'éch. 1:1');
+
+  /* ---------- DÉVELOPPÉ / GABARIT (1:1) bande du collier ---------- */
+  (()=>{
+    const s=1.0;
+    const v=view(svg, sx>0?20:283-20, 120, s, sx);
+    const L=C.devLen;
+    v.rect(0,0,L,C.stripW,'vis');
+    // lignes de pliage
+    const b1=C.arm, b2=C.arm+ (Math.PI*(C.ringID/2+C.ringT/2)); // approx début/fin anneau
+    v.line(C.arm,0,C.arm,C.stripW,'ctr');
+    v.line(L-C.earL,0,L-C.earL,C.stripW,'ctr');
+    // trou oreille
+    v.circle(L-C.earL/2,C.stripW/2,C.earHole/2,'vis');
+    v.dimH(0,L,C.stripW,C.stripW+8,'≈170 développé',true);
+    v.dimV(0,C.stripW,0,-8,'25',true);
+    v.leader(C.arm,0,C.arm,-9,'pli R3');
+    v.leader(L-C.earL,C.stripW,L-C.earL+4,C.stripW+12,'pli oreille');
+    v.dia(L-C.earL/2,C.stripW/2,C.earHole/2,'Ø6,5',45,false);
+  })();
+  vlabel(svg, sx>0?20:283-150, 112, 'D — DÉVELOPPÉ (gabarit découpe/pliage)', 'éch. 1:1 — vérifier réglet');
+  // réglet de contrôle 50mm
+  controlRuler(svg, sx>0?200:30, 138);
+}
+
+/* règle de contrôle imprimée : 50 mm réels à l'échelle 1:1 */
+function controlRuler(svg,x,y){
+  const g=el(svg,'g',{});
+  el(g,'line',{x1:x,y1:y,x2:x+50,y2:y,stroke:'#000','stroke-width':0.3});
+  for(let i=0;i<=50;i+=10){el(g,'line',{x1:x+i,y1:y-1.5,x2:x+i,y2:y+1.5,stroke:'#000','stroke-width':0.3});}
+  const t=el(g,'text',{x:x+25,y:y-2.5,class:'lbl','font-size':'2.8','text-anchor':'middle'});
+  t.textContent='RÉGLET DE CONTRÔLE 0—50 mm (doit mesurer 50 mm à l\'impression 100%)';
+}
+
+/* =====================================================================
+   FEUILLE 3/5 — BERCEAU DE CROSSE (rep.2) — drawCradle(svg, mirror)
+   ===================================================================== */
+function drawCradle(svgId,sx){
+  const svg=document.getElementById(svgId);
+  const C=P.cra;
+
+  /* ---------- VUE DE FACE (1:2) : plan du pare-brise ; on voit la poche en U ---------- */
+  (()=>{
+    const s=0.7;
+    const v=view(svg, sx>0?32:283-32, 30, s, sx);
+    // platine
+    v.rect(0,0,C.plW,C.plH,'vis');
+    [{x:C.plW/2-C.holePitch/2},{x:C.plW/2+C.holePitch/2}].forEach(h=>{v.circle(h.x,C.holeTop,C.holeD/2,'vis');v.cmark(h.x,C.holeTop,C.holeD/2);});
+    // poche en U (vue de face = rectangle ouvert en haut), centrée, devant la platine
+    const ux=(C.plW-C.cupWi)/2;
+    v.line(ux,C.plH,ux,C.plH- C.cupWall,'vis');
+    v.line(ux+C.cupWi,C.plH,ux+C.cupWi,C.plH-C.cupWall,'vis');
+    v.line(ux,C.plH,ux+C.cupWi,C.plH,'vis');
+    // crosse en pointillés
+    v.line(C.plW/2-C.buttW/2,C.plH-C.cupWall-8,C.plW/2-C.buttW/2,C.plH-3,'hid');
+    v.line(C.plW/2+C.buttW/2,C.plH-C.cupWall-8,C.plW/2+C.buttW/2,C.plH-3,'hid');
+    v.cmark(C.plW/2,C.plH-C.cupWall/2,5);
+    // fentes sangle
+    v.rect(ux-1,C.plH-C.cupWall+6,-C.slotW*0+4,C.slotH,'vis');
+    // cotes
+    v.dimH(0,C.plW,-2,-9,null,false);
+    v.dimV(0,C.plH,0,-7,null,false);
+    v.dimH(C.plW/2-C.holePitch/2,C.plW/2+C.holePitch/2,C.holeTop, C.holeTop-7,'45',false);
+    v.dimH(ux,ux+C.cupWi,C.plH+2,C.plH+9,'55 (int.)',true);
+    v.dia(C.plW/2-C.holePitch/2,C.holeTop,C.holeD/2,'2×Ø6,5',-135,false);
+    v.leader(C.plW/2,C.plH-C.cupWall-4,C.plW/2,C.plH-C.cupWall-12,'crosse 48 (est.)',true);
+  })();
+  vlabel(svg, sx>0?22:283-92, 16, 'A — VUE DE FACE', 'éch. 1:2');
+
+  /* ---------- VUE DE CÔTÉ (1:2) : montre le déport + profondeur poche ---------- */
+  (()=>{
+    const s=0.7;
+    const v=view(svg, sx>0?150:283-150, 30, s, sx);
+    // platine (épaisseur)
+    v.rect(0,0,C.plT,C.plH,'vis'); v.hatch(0,0,C.plT,C.plH);
+    // bras de déport en haut vers la poche
+    const offX=C.plT+C.standoff;
+    v.rect(C.plT,C.plH-C.cupWall-C.plT, C.standoff, C.plT,'vis');
+    // poche en U vue de côté (profondeur cupDepth, hauteur cupWall) - fond + 2 retours
+    v.rect(offX,C.plH-C.cupWall, C.cupDepth, C.plT,'vis'); // fond
+    v.line(offX,C.plH-C.cupWall,offX,C.plH-C.cupWall+ C.cupWall,'vis'); // paroi arrière (vers platine)
+    v.line(offX+C.cupDepth,C.plH-C.cupWall,offX+C.cupDepth,C.plH,'vis'); // paroi avant
+    v.line(offX,C.plH,offX+C.cupDepth,C.plH,'vis');
+    // crosse (profil) pointillés
+    v.rect(offX+4,C.plH-C.cupWall-10,C.buttD,C.cupWall+6,'hid');
+    // cotes
+    v.dimV(0,C.plH,0,-7,null,false);
+    v.dimH(C.plT,C.plT+C.standoff,C.plH-C.cupWall-C.plT, C.plH-C.cupWall-C.plT-7,'25 (déport)',true);
+    v.dimH(offX,offX+C.cupDepth,C.plH+2,C.plH+9,'45 (prof.)',true);
+    v.dimV(C.plH-C.cupWall,C.plH, offX+C.cupDepth, offX+C.cupDepth+7,'50 (h. paroi)',true);
+    v.leader(C.plT/2,8,C.plT/2-6,2,'ép. 2,5');
+    v.balloon(offX+C.cupDepth/2,C.plH-C.cupWall,'2', offX+C.cupDepth+14, C.plH-C.cupWall-14);
+    v.balloon(0,8,'2a', -14, 4);
+    v.balloon(offX+6,C.plH-2,'9', offX+C.cupDepth+12, C.plH+6);
+  })();
+  vlabel(svg, sx>0?138:283-200, 16, 'B — VUE DE CÔTÉ', 'éch. 1:2');
+
+  /* ---------- VUE DE DESSUS (1:2) ---------- */
+  (()=>{
+    const s=0.7;
+    const v=view(svg, sx>0?235:283-235, 36, s, sx);
+    // platine (largeur 70 vue de dessus = trait épaisseur), à gauche
+    v.rect(-C.plT,-C.plW/2,C.plT,C.plW,'vis'); v.hatch(-C.plT,-C.plW/2,C.plT,C.plW);
+    // poche vue de dessus : rectangle int. 55(larg) x 45(prof) avec parois 2,5
+    const offX=C.standoff;
+    v.rect(offX,-C.cupWi/2-C.plT,C.cupDepth+C.plT,C.cupWi+2*C.plT,'vis');
+    v.rect(offX+C.plT,-C.cupWi/2,C.cupDepth,C.cupWi,'vis');
+    v.cmark(offX+C.cupDepth/2,0,C.cupWi/2+2);
+    // crosse pointillés
+    v.rect(offX+C.plT+3,-C.buttW/2,C.buttD,C.buttW,'hid');
+    v.dimV(-C.cupWi/2,C.cupWi/2, offX+C.cupDepth+C.plT, offX+C.cupDepth+C.plT+8,'55',true);
+    v.dimH(0,offX, -C.cupWi/2-C.plT-3, -C.cupWi/2-C.plT-9,'25',true);
+    v.dimV(-C.plW/2,C.plW/2,-C.plT, -C.plT-7,'70',false);
+  })();
+  vlabel(svg, sx>0?215:283-255, 16, 'C — VUE DE DESSUS', 'éch. 1:2');
+
+  /* ---------- DÉVELOPPÉ poche en U (1:1) ---------- */
+  (()=>{
+    const s=1.0;
+    const v=view(svg, sx>0?16:283-16, 116, s, sx);
+    // développé en croix simple: fond cupDepth x cupWi, + 2 parois (cupWall) + dosseret
+    const W=C.cupWi, D=C.cupDepth, H=C.cupWall;
+    // fond
+    v.rect(H,0,D,W,'vis');
+    // paroi avant
+    v.rect(H+D,0,H,W,'vis');
+    // paroi arrière + languette platine
+    v.rect(0,0,H,W,'vis');
+    // plis
+    v.line(H,0,H,W,'ctr'); v.line(H+D,0,H+D,W,'ctr');
+    v.dimH(0,2*H+D,W,W+8,'≈155 développé',true);
+    v.dimV(0,W,0,-8,'55',true);
+    v.leader(H,0,H,-8,'plis 90° R3');
+  })();
+  vlabel(svg, sx>0?16:283-150, 108, 'D — DÉVELOPPÉ poche (gabarit)', 'éch. 1:1 — vérifier réglet');
+  controlRuler(svg, sx>0?205:30, 138);
+}
+
+/* =====================================================================
+   FEUILLE 6 — MONTAGE LATÉRAL  (1:5)
+   ===================================================================== */
+function drawAssembly(){
+  const svg=document.getElementById('svgASM');
+  const A=P.asm;
+  const s=0.22; // ~1:4.5 pour tenir dans la feuille
+  const v=view(svg, 70, 18, s, 1);
+
+  // --- Cadre de pare-brise : montant + rail bas (profil latéral) ---
+  // montant incliné ~ vertical, on schématise un cadre en L
+  const fx=0;        // face intérieure cadre
+  // rail inférieur (cowl) + montant
+  v.poly([[ -20,A.frameH],[ -20,A.frameH+40],[120,A.frameH+40],[120,A.frameH]],'metal',false);
+  v.rect(fx-18,0,16,A.frameH,'metal'); // montant cadre (profil)
+  v.line(fx,0,fx,A.frameH,'vis');
+  v.txt(fx-10,A.frameH/2,'Cadre de pare-brise (montant)','lbl','middle');
+
+  // --- Fusil M1 Garand schématique, incliné de tilt° ---
+  const tilt=A.tilt*Math.PI/180;
+  // base crosse au point (bx,by)
+  const bx=70, by=A.frameH-10;
+  // axe du fusil monte vers la gauche (vers le cadre) ; muzzle en haut
+  const dx=-Math.sin(tilt), dy=-Math.cos(tilt);
+  const L=A.riflLen;
+  const mx=bx+dx*L, my=by+dy*L;
+  // corps fusil (ligne épaisse) + crosse (polygone bas)
+  v.line(bx,by,mx,my,'rifle');
+  // épaule de crosse
+  v.poly([[bx-6,by],[bx+10,by-10],[bx+12,by-150],[bx-2,by-150]],'rifle',true);
+  // canon haut + garde-main
+  v.txt(mx,my-6,'Muzzle ↑','lbl','middle');
+  v.txt(bx+20,by+12,'Crosse (talon) dans berceau','lbl','start');
+
+  // position collier (haut) le long de l'axe
+  const t1=0.62; const c1x=bx+dx*L*t1, c1y=by+dy*L*t1;
+  // position berceau (bas) près de la crosse
+  const t2=0.06; const c2x=bx+dx*L*t2, c2y=by+dy*L*t2;
+
+  // --- pince supérieure (collier) ---
+  v.circle(c1x,c1y,20,'metal');
+  v.line(c1x,c1y,fx,c1y+8,'vis');
+  v.rect(fx-2, c1y-30, 4, 60,'metal'); // platine sur cadre
+  v.circle(fx, c1y-15, 4,'vis'); v.circle(fx, c1y+15,4,'vis');
+  v.balloon(c1x+14,c1y-14,'1', c1x+70, c1y-70);
+  v.balloon(fx, c1y-15,'3', fx-60, c1y-50);
+
+  // --- pince inférieure (berceau) ---
+  v.rect(c2x-6,c2y-10,60,70,'metal');
+  v.line(c2x-6,c2y+60,fx,c2y+60,'vis');
+  v.rect(fx-2,c2y+30,4,60,'metal');
+  v.balloon(c2x+25,c2y+25,'2', c2x+90, c2y+80);
+  v.balloon(fx,c2y+55,'3', fx-60, c2y+100);
+  v.balloon(c2x+50,c2y+5,'7', c2x+95, c2y-10);
+
+  // --- cotes d'implantation ---
+  v.dimV(c1y,c2y, mx-30, mx-60,'≈430 entr'+'axe colliers',true);
+  v.dimV(0,A.frameH, fx-30, -120,'565 (h. cadre réf.)',false);
+  v.leader(mx,my, mx+60, my-10, 'M1 Garand L≈1105',true);
+  // angle
+  v.txt(bx+30,by-30, 'Inclinaison ≈ 8° / vertical (est.)','dimtxt','start');
+
+  // légende implantation
+  freetxt(svg, 200, 30, 'IMPLANTATION (côté passager)', 'vname');
+  const notes=[
+    '• Pince supérieure (Rep.1) : serre le garde-main/canon, côté intérieur du montant.',
+    '• Pince inférieure (Rep.2) : reçoit le talon de crosse, sanglée (Rep.7).',
+    '• Fixation : 2 boulons coach M6 (Rep.3) par platine, écrou+Grower au dos.',
+    '• Recaler l\'entraxe (≈430) selon le fusil réellement embarqué.',
+    '• Côté conducteur : montage symétrique (feuilles 4 & 5).'
+  ];
+  notes.forEach((n,i)=>freetxt(svg,200,40+i*7,n,'lbl'));
+  freetxt(svg, 200, 92, 'Échelle ≈ 1:4,5 — vue schématique (non à découper)','lbl');
+}
+
+/* =====================================================================
+   RENDU
+   ===================================================================== */
+window.addEventListener('DOMContentLoaded',()=>{
+  drawUpper('svgR1',+1);
+  drawCradle('svgR2',+1);
+  drawUpper('svgL1',-1);
+  drawCradle('svgL2',-1);
+  drawAssembly();
+});
+</script>
+</body>
+</html>
